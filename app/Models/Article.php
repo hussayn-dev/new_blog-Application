@@ -30,7 +30,7 @@ class Article extends Model
 
     public function tags() : BelongsToMany
      {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tags::class);
     }
     // protected static function generateUUID(): string
     // {
