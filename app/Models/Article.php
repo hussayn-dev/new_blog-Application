@@ -13,15 +13,25 @@ class Article extends Model
     use HasFactory;
 
 
-    public static function boot()
-    {
-        parent::boot();
+public static function boot()
+{
+    parent::boot();
 
-        self::saving(function ($article) {
-            // perform some logic before saving the model
-            $article->slug = self::generateSlug($article);
-        });
-    }
+    self::saving(function ($article) {
+        // perform some logic before saving the model
+        $article->slug = self::generateSlug($article);
+        $article->uuid = self::generateUUID();
+    });
+}
+
+public function image() : HasMany {
+    return $this->hasMany(Image::class);
+}
+
+public function scopeLike($query, $field, $value = null)
+{
+    return $query->where($field, 'LIKE', "%$value%");
+}
 
   public function comments() : HasMany
   {
@@ -32,14 +42,14 @@ class Article extends Model
      {
         return $this->belongsToMany(Tags::class);
     }
-    // protected static function generateUUID(): string
-    // {
-    //     $uuid = Str::uuid();
-    //     if (self::query()->where('uuid', $uuid)->first()) {
-    //         self::generateUUID();
-    //     }
-    //     return $uuid;
-    // }
+    protected static function generateUUID(): string
+    {
+        $uuid = Str::uuid();
+        if (self::query()->where('uuid', $uuid)->first()) {
+            self::generateUUID();
+        }
+        return $uuid;
+    }
 
     protected static function generateSlug($model): string
     {

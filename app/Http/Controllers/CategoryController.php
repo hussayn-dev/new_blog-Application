@@ -10,13 +10,19 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function manage(Request $request)
+    public function search(Request $request)
     {
      $search = $request->input('search');
      $categories = Category::like("name", $search)->paginate(15);
      return view('category.manage', compact('categories'));
     }
 
+    public function manage(Request $request)
+    {
+        $categories = Category::paginate(15);
+        return view('category.manage', compact('categories'));
+
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -63,7 +69,7 @@ class CategoryController extends Controller
      */
     public function edit(string $uuid)
     {
-        $category = Category::findorFail($uuid);
+        $category = Category::where('uuid',$uuid)->firstOrFail();
         return view('category.edit', compact('category'));
     }
 
@@ -75,7 +81,7 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|min:3|max:255',
         ]);
-        $category = Category::find($uuid);
+        $category = Category::where('uuid',$uuid)->first();
 
         if(!$category) {
             redirect()->back()->withErrors("error", "Category not found");
@@ -90,7 +96,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $uuid)
     {
-    $category = Category::find($uuid);
+      $category = Category::where('uuid',$uuid)->first();
 
     if(!$category) {
         redirect()->back()->withErrors("error", "Category not found");
